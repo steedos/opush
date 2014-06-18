@@ -20,7 +20,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for topic in req.body.pushTopics
                     eventName = topic
                     if req.param("steedosId")?
-                        eventName = eventName + "." + req.param("steedosId").replace("@", "_").replace(".", "_")
+                        eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
                     events[eventName].pushTopic = eventName
                     events[eventName].data = {}
@@ -61,7 +61,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         for topic in req.body.pushTopics
                             eventName = topic
                             if req.param("steedosId")?
-                                eventName = eventName + "." + req.param("steedosId").replace("@", "_").replace(".", "_")
+                                eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions(events)
 
@@ -88,7 +88,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         for topic in req.body.pushTopics
                             eventName = topic
                             if req.param("steedosId")?
-                                eventName = eventName + "." + req.param("steedosId").replace("@", "_").replace(".", "_")
+                                eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions(events)
 
@@ -115,7 +115,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         for topic in req.body.pushTopics
                             eventName = topic
                             if req.param("steedosId")?
-                                eventName = eventName + "." + req.param("steedosId").replace("@", "_").replace(".", "_")
+                                eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions(events)
 
@@ -141,7 +141,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for topic in req.body.pushTopics
                     eventName = topic
                     if req.param("steedosId")?
-                        eventName = eventName + "." + req.param("steedosId").replace("@", "_").replace(".", "_")
+                        eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
                 req.subscriber.addSubscriptions(events)
                 
@@ -167,7 +167,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for topic in req.body.pushTopics
                     eventName = topic
                     if req.param("steedosId")?
-                        eventName = eventName + "." + req.param("steedosId").replace("@", "_").replace(".", "_")
+                        eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
                 req.subscriber.removeSubscriptions(events)
                 
@@ -191,7 +191,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for sub in subs
                     result.registeredTopics.push(sub.event.name)
 
-                result.webCourierURL = "/webcourier"
+                result.webCourierURL = "http://pushws.steedos.com:2000/webcourier"
                 res.json result, if result? then 200 else 404
             else
                 logger.error "No subscriber #{req.subscriber.id}"
@@ -206,7 +206,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             if req.body.pushTopic?
                 if req.body.toUsers?
                     for user in req.body.toUsers
-                        eventName = req.body.pushTopic + "." + user.replace("@", "_").replace(".", "_")
+                        eventName = req.body.pushTopic + "|" + user.replace("@", "_").replace(".", "_")
                         event = getEventFromId(eventName)
                         message = {}
                         if req.body.data?
@@ -253,7 +253,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
 
                 sendEvent = (event, payload) ->
                     data =
-                        pushTopic: event.name.split(".")[0]
+                        pushTopic: event.name.split("|")[0]
                         alertTitle: payload.title.default
                         alert: payload.msg.default
                         badge: payload.badge

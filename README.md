@@ -32,8 +32,9 @@ Features
 Installation
 ------------
 
-- Install [redis](http://redis.io/), [node.js](http://nodejs.org/), [npm](http://npmjs.org/) and [coffeescript](http://coffeescript.org/).
-- Clone the repository: `git clone git://github.com/rs/pushd.git && cd pushd`
+- Install [redis](http://redis.io/): brew install redis
+- Install [node.js](http://nodejs.org/), [npm](http://npmjs.org/) and [coffeescript](http://coffeescript.org/).
+- Clone the repository: `git clone git://github.com/steedos/pushd.git && cd pushd`
 - Install dependancies: `npm install`
 - Configure the server: `cp settings-sample.coffee settings.coffee && vi settings.coffee`
 - Start redis: `redis-server`
