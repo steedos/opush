@@ -56,7 +56,7 @@ class Event
                 .exec (err, results) ->
                     cb(results[1] > 0) if cb
 
-    badge: (badge) ->
+    setBadge: (badge) ->
         @redis.hset(@key, "badge", badge)
 
     log: (cb) ->

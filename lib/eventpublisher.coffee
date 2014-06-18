@@ -33,7 +33,7 @@ class EventPublisher extends events.EventEmitter
                 return
 
             if (data && data.badge) 
-                event.badge(data.badge)                
+                event.setBadge(data.badge)                
 
             logger.verbose "Pushing message for event #{event.name}"
             logger.silly 'Title: ' + payload.localizedTitle('en')
