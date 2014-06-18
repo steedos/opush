@@ -10,6 +10,7 @@ class Payload
         @compiled = no
         @title = {}
         @msg = {}
+        @badge = {}
         @data = {}
         @var = {}
 
@@ -24,6 +25,7 @@ class Payload
                 when 'title' then @title.default = value
                 when 'msg' then @msg.default = value
                 when 'sound' then @sound = value
+                when 'badge' then @badge = value
                 else
                     if ([prefix, subkey] = key.split('.', 2)).length is 2
                         @[prefix][subkey] = value

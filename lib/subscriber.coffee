@@ -258,5 +258,88 @@ class Subscriber
                 else
                     cb(null) if cb # null if subscriber doesn't exist
 
+    addSubscriptions: (eventsToAdd, cb) ->
+        logger.verbose "Setting subscriptions for #{@id}: " + JSON.stringify(eventsToAdd)
+        for eventId, optionsDict of eventsToAdd
+            event =  new Event(@redis, eventId)
+            options = 0
+            if optionsDict? and typeof(optionsDict) is 'object' and optionsDict.ignore_message
+                options |= event.OPTION_IGNORE_MESSAGE
+            eventsToAdd[event.name] = event: event, options: options
+
+        subscriber = new Subscriber(@redis, @id)
+
+        subscriber.getSubscriptions (subs) ->
+            if not subs?
+                throw new Error("Invalid subscriber")
+
+            tasks = []
+
+            for sub in subs
+                if sub.event.name of eventsToAdd
+                    eventToAdd = eventsToAdd[sub.event.name]
+                    if eventToAdd.options != sub.options
+                        tasks.push ['set', eventToAdd.event, eventToAdd.options]
+                    delete eventsToAdd[sub.event.name]
+                #else
+                #    tasks.push ['del', sub.event, 0]
+
+            for eventName, sub of eventsToAdd
+                tasks.push ['add', sub.event, sub.options]
+
+            async.every tasks, (task, callback) ->
+                [action, event, options] = task
+                if action == 'add'
+                    subscriber.addSubscription event, options, (added) ->
+                        callback(added)
+                else if action == 'del'
+                    subscriber.removeSubscription event, (deleted) ->
+                        callback(deleted)
+                else if action == 'set'
+                    subscriber.addSubscription event, options, (added) ->
+                        callback(!added) # should return false
+            , (result) ->
+                if not result
+                    logger.error "Failed to set properties for #{@id}"
+                    throw new Error("Failed to set properties for #{@id}")
+
+    removeSubscriptions: (eventsToAdd, cb) ->
+        logger.verbose "Setting subscriptions for #{@id}: " + JSON.stringify(eventsToAdd)
+        for eventId, optionsDict of eventsToAdd
+            event =  new Event(@redis, eventId)
+            options = 0
+            if optionsDict? and typeof(optionsDict) is 'object' and optionsDict.ignore_message
+                options |= event.OPTION_IGNORE_MESSAGE
+            eventsToAdd[event.name] = event: event, options: options
+
+        subscriber = new Subscriber(@redis, @id)
+
+        subscriber.getSubscriptions (subs) ->
+            if not subs?
+                throw new Error("Invalid subscriber")
+
+            tasks = []
+
+            for sub in subs
+                if sub.event.name of eventsToAdd
+                    tasks.push ['del', sub.event, 0]
+
+            async.every tasks, (task, callback) ->
+                [action, event, options] = task
+                if action == 'add'
+                    subscriber.addSubscription event, options, (added) ->
+                        callback(added)
+                else if action == 'del'
+                    subscriber.removeSubscription event, (deleted) ->
+                        callback(deleted)
+                else if action == 'set'
+                    subscriber.addSubscription event, options, (added) ->
+                        callback(!added) # should return false
+            , (result) ->
+                if not result
+                    logger.error "Failed to set properties for #{@id}"
+                    throw new Error("Failed to set properties for #{@id}")
+
+                    
 
 exports.Subscriber = Subscriber

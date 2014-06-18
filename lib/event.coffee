@@ -9,6 +9,7 @@ class Event
         throw new Error("Missing redis connection") if not redis?
         throw new Error('Invalid event name ' + @name) if not Event::name_format.test @name
         @key = "event:#{@name}"
+        @badge = 0
 
     info: (cb) ->
         return until cb
@@ -24,9 +25,9 @@ class Event
                     for own key, value of results[0]
                         num = parseInt(value)
                         info[key] = if num + '' is value then num else value
-                    cb(info)
+                    cb(info, @name)
                 else
-                    cb(null)
+                    cb(null, @name)
 
     exists: (cb) ->
         if @name is 'broadcast'
@@ -54,6 +55,9 @@ class Event
                 .srem("events", @name)
                 .exec (err, results) ->
                     cb(results[1] > 0) if cb
+
+    badge: (badge) ->
+        @redis.hset(@key, "badge", badge)
 
     log: (cb) ->
         @redis.multi()

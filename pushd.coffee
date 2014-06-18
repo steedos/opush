@@ -1,3 +1,4 @@
+async = require 'async'
 express = require 'express'
 dgram = require 'dgram'
 zlib = require 'zlib'
@@ -24,6 +25,7 @@ createSubscriber = (fields, cb) ->
     throw new Error("Invalid value for `proto'") unless service = pushServices.getService(fields.proto)
     throw new Error("Invalid value for `token'") unless fields.token = service.validateToken(fields.token)
     Subscriber::create(redis, fields, cb)
+
 
 tokenResolver = (proto, token, cb) ->
     Subscriber::getInstanceFromToken redis, proto, token, cb
@@ -68,6 +70,9 @@ app.param 'subscriber_id', (req, res, next, id) ->
         next()
     catch error
         res.json error: error.message, 400
+
+getSubscriberFromId = (id) ->
+    return new Subscriber(redis, id)
 
 getEventFromId = (id) ->
     return new Event(redis, id)
@@ -117,6 +122,8 @@ authorize = (realm) ->
 require('./lib/api').setupRestApi(app, createSubscriber, getEventFromId, authorize, testSubscriber, eventPublisher)
 if eventSourceEnabled
     require('./lib/eventsource').setup(app, authorize, eventPublisher)
+
+require('./lib/steedos').setup(app, createSubscriber, getEventFromId, authorize, testSubscriber, eventPublisher, getSubscriberFromId)
 
 port = settings?.server?.tcp_port ? 80
 app.listen port
