@@ -160,9 +160,6 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 req.subscriber.addSubscriptions events, (r) ->
                     generateResponse req.subscriber, (result)->
                         res.json result, 200
-                
-            generateResponse req.subscriber, (result)->
-                res.json result, 200
 
         catch error
             logger.error "registerTopics failed: #{error.message}"
