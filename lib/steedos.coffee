@@ -15,7 +15,7 @@ generateResponse = (req, res, subscriber) ->
             for sub in subs
                 result.registeredTopics.push(sub.event.name.split("|")[0])
 
-            result.webCourierURL = "https://" + req.headers.host + "/webcourier"
+            result.webCourierURL = "https://" + req.host + "/webcourier"
             res.json result
 
 
@@ -183,24 +183,6 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             logger.error "registerTopics failed: #{error.message}"
             res.json error: error.message, 400
 
-
-    # Get token info
-    app.get '/getToken/:subscriber_id', authorize('listen'), (req, res) ->
-        req.subscriber.getSubscriptions (subs) ->
-            if subs?
-                result = {}
-                result.pushToken = req.subscriber.id
-                result.pushTokenTTL = 6000
-                result.registeredTopics = []
-
-                for sub in subs
-                    result.registeredTopics.push(sub.event.name)
-
-                result.webCourierURL = "https://" + req.headers.host + "/webcourier"
-                res.json result, if result? then 200 else 404
-            else
-                logger.error "No subscriber #{req.subscriber.id}"
-                res.send 404
 
 
     app.post '/message', authorize('publish'), (req, res) ->
