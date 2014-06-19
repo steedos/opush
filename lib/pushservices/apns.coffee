@@ -25,13 +25,16 @@ class PushServiceAPNS
 
 
     push: (subscriber, subOptions, payload) ->
+        logger.verbose "APNS push: " + JSON.stringify(payload)
         subscriber.get (info) =>
             note = new apns.Notification()
             device = new apns.Device(info.token)
             device.subscriberId = subscriber.id # used for error logging
             if subOptions?.ignore_message isnt true and alert = payload.localizedMessage(info.lang)
                 note.alert = alert
-            note.badge = badge if not isNaN(badge = parseInt(info.badge) + 1)
+            #note.badge = badge if not isNaN(badge = parseInt(info.badge) + 1)
+            if (info.badge)
+                note.badge = info.badge
             note.sound = payload.sound
             if @payloadFilter?
                 for key, val of payload.data
@@ -40,6 +43,6 @@ class PushServiceAPNS
                 note.payload = payload.data
             @driver.pushNotification note, device
             # On iOS we have to maintain the badge counter on the server
-            subscriber.incr 'badge'
+            #subscriber.incr 'badge'
 
 exports.PushServiceAPNS = PushServiceAPNS
