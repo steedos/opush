@@ -4,6 +4,21 @@ logger = require 'winston'
 
 uuid = require './uuid'
 
+generateResponse = (subscriber, cb) ->
+    subscriber.getSubscriptions (subs) ->
+        if subs?
+            result = {}
+            result.pushToken = subscriber.id
+            result.pushTokenTTL = 6000
+            result.registeredTopics = []
+
+            for sub in subs
+                result.registeredTopics.push(sub.event.name)
+
+            result.webCourierURL = "http://pushws.steedos.com:2001/webcourier"
+            if (cb)
+                cb(result)
+
 
 exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscriber, eventPublisher, getSubscriberFromId) ->
     authorize ?= (realm) ->
@@ -65,8 +80,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             events[eventName] = {}
                         subscriber.addSubscriptions(events)
 
-                    res.header 'Location', "/getToken/#{subscriber.id}"
-                    res.json {}, if created then 201 else 200
+                    generateResponse subscriber, (result)->
+                        res.json result, 200
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -92,8 +107,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             events[eventName] = {}
                         subscriber.addSubscriptions(events)
 
-                    res.header 'Location', "/getToken/#{subscriber.id}"
-                    res.json {}, if created then 201 else 200
+                    generateResponse subscriber, (result)->
+                        res.json result, 200
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -119,8 +134,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             events[eventName] = {}
                         subscriber.addSubscriptions(events)
 
-                    res.header 'Location', "/getToken/#{subscriber.id}"
-                    res.json {}, if created then 201 else 200
+                    generateResponse subscriber, (result)->
+                        res.json result, 200
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -145,8 +160,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                     events[eventName] = {}
                 req.subscriber.addSubscriptions(events)
                 
-            res.header 'Location', "/getToken/#{req.subscriber.id}"
-            res.json {}, 201
+            generateResponse req.subscriber, (result)->
+                res.json result, 200
 
         catch error
             logger.error "registerTopics failed: #{error.message}"
@@ -170,9 +185,9 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
                 req.subscriber.removeSubscriptions(events)
-                
-            res.header 'Location', "/getToken/#{req.subscriber.id}"
-            res.json {}, 201
+        
+            generateResponse req.subscriber, (result)->
+                res.json result, 200
 
         catch error
             logger.error "registerTopics failed: #{error.message}"
