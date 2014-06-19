@@ -9,7 +9,11 @@ class PushServices
 
     push: (subscriber, subOptions, payload, cb) ->
         subscriber.get (info) =>
-            if info then @services[info.proto]?.push(subscriber, subOptions, payload)
+            if info?
+                if (info.appId && @services[info.proto + "|" + info.appId]) 
+                    @services[info.proto + info.appId]?.push(subscriber, subOptions, payload)
+                else if @services[info.proto]? 
+                    @services[info.proto]?.push(subscriber, subOptions, payload)
             cb() if cb
 
 exports.PushServices = PushServices

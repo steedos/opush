@@ -67,10 +67,35 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             else
                 fields.proto = "web"
 
-            if req.body.pushToken?
+            if req.param("token")?
+                fields.token = req.param("token")
+            # temp variables for steedos
+            else if req.body.pushToken?
                 fields.token = req.body.pushToken
+            else if req.param("clientId")?
+                fields.token = req.param("clientId")
             else
                 fields.token = uuid()
+
+            if req.param("appId")?
+                fields.appId = req.param("appId")
+            # temp variables for steedos
+            else if req.body.pushTopics?
+                if (req.body.pushTopics.length>1)
+                    fields.appId = "steedos"
+                else
+                    fields.appId = req.body.pushTopics[0]
+            else
+                fields.appId = "unknown"
+
+            if req.param("steedosId")?
+                fields.steedosId = req.param("steedosId")
+
+            if req.param("lang")?
+                fields.lang = req.param("lang")
+
+            if req.param("clientBuildNumber")?
+                fields.clientBuildNumber = req.param("clientBuildNumber")
 
             createSubscriber fields, (subscriber, created) ->
                 subscriber.get (info) ->
