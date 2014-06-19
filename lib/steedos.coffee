@@ -4,7 +4,7 @@ logger = require 'winston'
 
 uuid = require './uuid'
 
-generateResponse = (subscriber, cb) ->
+generateResponse = (req, res, subscriber) ->
     subscriber.getSubscriptions (subs) ->
         if subs?
             result = {}
@@ -15,9 +15,8 @@ generateResponse = (subscriber, cb) ->
             for sub in subs
                 result.registeredTopics.push(sub.event.name.split("|")[0])
 
-            result.webCourierURL = "https://" + request.headers.host + "/webcourier"
-            if (cb)
-                cb(result)
+            result.webCourierURL = "https://" + req.headers.host + "/webcourier"
+            res.json result
 
 
 exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscriber, eventPublisher, getSubscriberFromId) ->
@@ -80,9 +79,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                                 eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
-                            generateResponse subscriber, (result)->
-                                logger.verbose "getToken result: " + JSON.stringify(result)
-                                res.json result
+                            generateResponse(req, res, subscriber)
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -107,8 +104,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                                 eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
-                            generateResponse subscriber, (result)->
-                                res.json result, 200
+                            generateResponse(req, res, subscriber)
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -133,8 +129,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                                 eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
-                            generateResponse subscriber, (result)->
-                                res.json result, 200
+                            generateResponse(req, res, subscriber)
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -158,8 +153,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
                 req.subscriber.addSubscriptions events, (r) ->
-                    generateResponse req.subscriber, (result)->
-                        res.json result, 200
+                    generateResponse(req, res, req.subscriber)
 
         catch error
             logger.error "registerTopics failed: #{error.message}"
@@ -183,8 +177,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
                 req.subscriber.removeSubscriptions events, (r) ->
-                    generateResponse req.subscriber, (result)->
-                        res.json result, 200
+                    generateResponse(req, res, req.subscriber)
 
         catch error
             logger.error "registerTopics failed: #{error.message}"
@@ -203,7 +196,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for sub in subs
                     result.registeredTopics.push(sub.event.name)
 
-                result.webCourierURL = "https://" + request.headers.host + "/webcourier"
+                result.webCourierURL = "https://" + req.headers.host + "/webcourier"
                 res.json result, if result? then 200 else 404
             else
                 logger.error "No subscriber #{req.subscriber.id}"
