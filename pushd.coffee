@@ -1,5 +1,5 @@
 async = require 'async'
-express = require 'express'
+express = require './lib/express'
 dgram = require 'dgram'
 zlib = require 'zlib'
 url = require 'url'
