@@ -60,8 +60,19 @@ app.configure ->
     if settings.server?.auth? and not settings.server?.acl?
         app.use(express.basicAuth checkUserAndPassword)
     app.use(express.bodyParser())
+
+    app.use (req, res, next) ->
+        if (req.headers.origin)
+            res.header("Access-Control-Allow-Origin", req.headers.origin);
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+        res.header("Access-Control-Allow-Credentials", "true");
+        res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        next();
+
     app.use(app.router)
     app.disable('x-powered-by');
+
+    
 
 app.param 'subscriber_id', (req, res, next, id) ->
     try

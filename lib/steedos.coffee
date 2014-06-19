@@ -13,7 +13,7 @@ generateResponse = (subscriber, cb) ->
             result.registeredTopics = []
 
             for sub in subs
-                result.registeredTopics.push(sub.event.name)
+                result.registeredTopics.push(sub.event.name.split("|")[0])
 
             result.webCourierURL = "http://pushws.steedos.com:2001/webcourier"
             if (cb)
@@ -36,14 +36,14 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                     eventName = topic
                     if req.param("steedosId")?
                         eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
-                    events[eventName] = {}
-                    events[eventName].pushTopic = eventName
-                    events[eventName].data = {}
+                    events[topic] = {}
+                    events[topic].pushTopic = topic
+                    events[topic].data = {}
                     event = getEventFromId(eventName)
                     event.info (info, name) ->
                         if info?
-                            events[name].data.badge = info.badge
-                            states.push(events[name])
+                            events[name.split("|")[0]].data.badge = info.badge
+                            states.push(events[name.split("|")[0]])
                         c = c + 1
                         if (c >= req.body.pushTopics.length)
                             res.json {states: states}, 200
@@ -53,6 +53,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             res.json error: error.message, 400
 
     app.post '/getToken', authorize('register'), (req, res) ->
+
 
         logger.verbose "getToken: " + JSON.stringify(req.body)
         try
@@ -80,7 +81,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
                             generateResponse subscriber, (result)->
-                                res.json result, 200
+                                logger.verbose "getToken result: " + JSON.stringify(result)
+                                res.json result
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -156,7 +158,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
                 req.subscriber.addSubscriptions events, (r) ->
-                    generateResponse subscriber, (result)->
+                    generateResponse req.subscriber, (result)->
                         res.json result, 200
                 
             generateResponse req.subscriber, (result)->
@@ -184,7 +186,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
                 req.subscriber.removeSubscriptions events, (r) ->
-                    generateResponse subscriber, (result)->
+                    generateResponse req.subscriber, (result)->
                         res.json result, 200
 
         catch error
@@ -241,7 +243,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
 
 
 
-    app.get '/webcourior', authorize('listen'), (req, res) ->
+    app.post '/webcourier', authorize('listen'), (req, res) ->
 
         tok = req.param("tok")
         subscriber =  getSubscriberFromId(tok)
@@ -251,12 +253,12 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for sub in subs
                     eventNames.push(sub.event.name)
 
-                req.socket.setTimeout(Infinity);
+                if req.param("ttl")
+                    req.socket.setTimeout(req.param("ttl"));
                 req.socket.setNoDelay(true);
                 res.set
-                    'Content-Type': 'text/event-plain',
+                    'Content-Type': 'text/plain',
                     'Cache-Control': 'no-cache',
-                    'Access-Control-Allow-Origin': '*',
                 res.write('\n')
 
                 if req.get('User-Agent')?.indexOf('MSIE') != -1
