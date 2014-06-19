@@ -271,7 +271,8 @@ class Subscriber
 
         subscriber.getSubscriptions (subs) ->
             if not subs?
-                throw new Error("Invalid subscriber")
+                logger.error("Invalid subscriber")
+                return
 
             tasks = []
 
@@ -316,7 +317,8 @@ class Subscriber
 
         subscriber.getSubscriptions (subs) ->
             if not subs?
-                throw new Error("Invalid subscriber")
+                logger.error("Invalid subscriber")
+                return
 
             tasks = []
 
