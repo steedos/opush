@@ -191,7 +191,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for sub in subs
                     result.registeredTopics.push(sub.event.name)
 
-                result.webCourierURL = "http://pushws.steedos.com:2000/webcourier"
+                result.webCourierURL = "http://pushws.steedos.com:2001/webcourier"
                 res.json result, if result? then 200 else 404
             else
                 logger.error "No subscriber #{req.subscriber.id}"

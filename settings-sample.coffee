@@ -3,8 +3,8 @@ exports.server =
     redis_host: 'localhost'
     # redis_socket: '/var/run/redis/redis.sock'
     # redis_auth: 'password'
-    tcp_port: 80
-    udp_port: 80
+    tcp_port: 2001
+    udp_port: 2001
     access_log: yes
     acl:
         # restrict publish access to private networks
@@ -19,6 +19,10 @@ exports.server =
 #            password: 'password'
 #            realms: ['register', 'publish']
 
+exports['web'] =
+    enabled: yes
+    class: require('./lib/pushservices/web').PushServiceWEB
+    
 exports['event-source'] =
     enabled: yes
 
