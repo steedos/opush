@@ -49,6 +49,7 @@ class EventPublisher extends events.EventEmitter
                         else
                             protoCounts[info.proto] = 1
 
+                logger.verbose payload["badge"]
                 @pushServices.push(subscriber, subOptions, payload, done)
             , (totalSubscribers) =>
                 # finished

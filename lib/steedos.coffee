@@ -227,16 +227,16 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         message = {}
                         if req.body.data?
                             if req.body.data.alertTitle?
-                                message.title = req.body.data.alertTitle
+                                message["title"] = req.body.data.alertTitle
                             if req.body.data.alert?
-                                message.msg = req.body.data.alert
+                                message["msg"] = req.body.data.alert
                             if req.body.data.badge?
-                                message.badge = req.body.data.badge + ""
+                                message["badge"] = req.body.data.badge + ""
                             if req.body.data.sound?
                                 if (req.body.data.sound != "default")
-                                    message.sound = req.body.data.sound
+                                    message["sound"] = req.body.data.sound
                             if req.body.data.data?
-                                message.data = req.body.data.data
+                                message["data"] = req.body.data.data
 
                         eventPublisher.publish(event, message)
 

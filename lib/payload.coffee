@@ -1,3 +1,5 @@
+logger = require 'winston'
+
 serial = 0
 
 class Payload
