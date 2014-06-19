@@ -1,4 +1,5 @@
 apns = require 'apn'
+logger = require 'winston'
 
 class PushServiceAPNS
     tokenFormat: /^[0-9a-f]{64}$/i
