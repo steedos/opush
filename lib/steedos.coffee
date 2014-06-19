@@ -230,7 +230,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                     eventNames.push(sub.event.name)
 
                 if req.param("ttl")
-                    req.socket.setTimeout(req.param("ttl"));
+                    req.socket.setTimeout(req.param("ttl")*1000);
                 req.socket.setNoDelay(true);
                 res.set
                     'Content-Type': 'text/plain',
