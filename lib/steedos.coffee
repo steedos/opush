@@ -1,6 +1,7 @@
 async = require 'async'
 util = require 'util'
 logger = require 'winston'
+settings = require '../settings'
 
 uuid = require './uuid'
 
@@ -15,7 +16,7 @@ generateResponse = (req, res, subscriber) ->
             for sub in subs
                 result.registeredTopics.push(sub.event.name.split("|")[0])
 
-            result.webCourierURL = "https://" + req.host + "/webcourier"
+            result.webCourierURL = "https://" + settings.web.host + "/webcourier"
             res.json result
 
 
