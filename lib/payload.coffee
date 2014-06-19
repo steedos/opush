@@ -35,7 +35,7 @@ class Payload
         # Detect empty payload
         sum = 0
         sum += (key for own key of @[type]).length for type in ['title', 'msg', 'data']
-        //if sum is 0 then throw new Error('Empty payload')
+        #if sum is 0 then throw new Error('Empty payload')
 
     localizedTitle: (lang) ->
         @localized('title', lang)
