@@ -15,7 +15,7 @@ generateResponse = (subscriber, cb) ->
             for sub in subs
                 result.registeredTopics.push(sub.event.name.split("|")[0])
 
-            result.webCourierURL = "http://pushws.steedos.com:2001/webcourier"
+            result.webCourierURL = "https://" + request.headers.host + "/webcourier"
             if (cb)
                 cb(result)
 
