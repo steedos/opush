@@ -300,6 +300,8 @@ class Subscriber
                     subscriber.addSubscription event, options, (added) ->
                         callback(!added) # should return false
             , (result) ->
+                if (cb)
+                    cb(result)
                 if not result
                     logger.error "Failed to set properties for #{@id}"
                     throw new Error("Failed to set properties for #{@id}")
@@ -338,6 +340,8 @@ class Subscriber
                     subscriber.addSubscription event, options, (added) ->
                         callback(!added) # should return false
             , (result) ->
+                if (cb)
+                    cb(result)
                 if not result
                     logger.error "Failed to set properties for #{@id}"
                     throw new Error("Failed to set properties for #{@id}")

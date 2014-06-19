@@ -78,10 +78,9 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             if req.param("steedosId")?
                                 eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
-                        subscriber.addSubscriptions(events)
-
-                    generateResponse subscriber, (result)->
-                        res.json result, 200
+                        subscriber.addSubscriptions events, (r) ->
+                            generateResponse subscriber, (result)->
+                                res.json result, 200
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -105,10 +104,9 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             if req.param("steedosId")?
                                 eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
-                        subscriber.addSubscriptions(events)
-
-                    generateResponse subscriber, (result)->
-                        res.json result, 200
+                        subscriber.addSubscriptions events, (r) ->
+                            generateResponse subscriber, (result)->
+                                res.json result, 200
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -132,10 +130,9 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             if req.param("steedosId")?
                                 eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                             events[eventName] = {}
-                        subscriber.addSubscriptions(events)
-
-                    generateResponse subscriber, (result)->
-                        res.json result, 200
+                        subscriber.addSubscriptions events, (r) ->
+                            generateResponse subscriber, (result)->
+                                res.json result, 200
 
         catch error
             logger.error "Creating token failed: #{error.message}"
@@ -158,7 +155,9 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                     if req.param("steedosId")?
                         eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
-                req.subscriber.addSubscriptions(events)
+                req.subscriber.addSubscriptions events, (r) ->
+                    generateResponse subscriber, (result)->
+                        res.json result, 200
                 
             generateResponse req.subscriber, (result)->
                 res.json result, 200
@@ -184,10 +183,9 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                     if req.param("steedosId")?
                         eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
                     events[eventName] = {}
-                req.subscriber.removeSubscriptions(events)
-        
-            generateResponse req.subscriber, (result)->
-                res.json result, 200
+                req.subscriber.removeSubscriptions events, (r) ->
+                    generateResponse subscriber, (result)->
+                        res.json result, 200
 
         catch error
             logger.error "registerTopics failed: #{error.message}"
