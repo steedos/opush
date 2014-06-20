@@ -77,8 +77,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             else
                 fields.token = uuid()
 
-            if req.body("appId")?
-                fields.appId = req.body("appId")
+            if req.body.appId?
+                fields.appId = req.body.appId
             # temp variables for steedos
             else if req.body.pushTopics?
                 if (req.body.pushTopics.length>1)
@@ -122,8 +122,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             fields = {}
             fields.token = req.body.pushToken
 
-            if req.body("appId")?
-                fields.appId = req.body("appId")
+            if req.body.appId?
+                fields.appId = req.body.appId
             # temp variables for steedos
             else if req.body.pushTopics?
                 if (req.body.pushTopics.length>1)
