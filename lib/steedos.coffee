@@ -67,8 +67,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             else
                 fields.proto = "web"
 
-            if req.param("token")?
-                fields.token = req.param("token")
+            if req.body("token")?
+                fields.token = req.body("token")
             # temp variables for steedos
             else if req.body.pushToken?
                 fields.token = req.body.pushToken
@@ -77,8 +77,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             else
                 fields.token = uuid()
 
-            if req.param("appId")?
-                fields.appId = req.param("appId")
+            if req.body("appId")?
+                fields.appId = req.body("appId")
             # temp variables for steedos
             else if req.body.pushTopics?
                 if (req.body.pushTopics.length>1)
@@ -120,8 +120,21 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
         logger.verbose "registerAPNS: " + JSON.stringify(req.body)
         try
             fields = {}
-            fields.proto = "apns"
             fields.token = req.body.pushToken
+
+            if req.body("appId")?
+                fields.appId = req.body("appId")
+            # temp variables for steedos
+            else if req.body.pushTopics?
+                if (req.body.pushTopics.length>1)
+                    fields.appId = "steedos"
+                else
+                    fields.appId = req.body.pushTopics[0]
+            else
+                fields.appId = "unknown"
+
+            fields.proto = "apns" + "|" + appId
+
             createSubscriber fields, (subscriber, created) ->
                 subscriber.get (info) ->
                     info.id = subscriber.id
