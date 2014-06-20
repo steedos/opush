@@ -67,8 +67,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             else
                 fields.proto = "web"
 
-            if req.body("token")?
-                fields.token = req.body("token")
+            if req.body.token?
+                fields.token = req.body.token
             # temp variables for steedos
             else if req.body.pushToken?
                 fields.token = req.body.pushToken
