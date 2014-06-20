@@ -133,7 +133,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             else
                 fields.appId = "unknown"
 
-            fields.proto = "apns" + "|" + appId
+            fields.proto = "apns" + "|" + fields.appId
 
             createSubscriber fields, (subscriber, created) ->
                 subscriber.get (info) ->
