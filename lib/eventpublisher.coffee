@@ -4,6 +4,7 @@ logger = require 'winston'
 
 class EventPublisher extends events.EventEmitter
     constructor: (@pushServices) ->
+        this.setMaxListeners(0)
 
     publish: (event, data, cb) ->
         try
