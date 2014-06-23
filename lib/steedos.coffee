@@ -105,7 +105,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         for topic in req.body.pushTopics
                             eventName = topic
                             if req.param("steedosId")?
-                                eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
+                                eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_").replace("-", "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
                             generateResponse(req, res, subscriber)
