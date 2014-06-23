@@ -62,16 +62,16 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
         try
             fields = {}
 
-            if req.body.proto?
-                fields.proto = req.body.proto
+            if req.param("proto")?
+                fields.proto = req.param("proto")
             else
                 fields.proto = "web"
 
-            if req.body.token?
-                fields.token = req.body.token
+            if req.param("token")?
+                fields.token = req.param("token")
             # temp variables for steedos
-            else if req.body.pushToken?
-                fields.token = req.body.pushToken
+            else if req.param("pushToken")?
+                fields.token = req.param("pushToken")
             else if req.param("clientId")?
                 fields.token = req.param("clientId")
             else
@@ -88,8 +88,12 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             else
                 fields.appId = "unknown"
 
-            if req.param("steedosId")?
-                fields.steedosId = req.param("steedosId")
+            if req.param("userId")?
+                fields.userId = req.param("userId")
+            else if req.param("steedosId")?
+                fields.userId = req.param("steedosId")
+            else 
+                fields.userId = "all"
 
             if req.param("lang")?
                 fields.lang = req.param("lang")
@@ -104,8 +108,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         events = {};
                         for topic in req.body.pushTopics
                             eventName = topic
-                            if req.param("steedosId")?
-                                eventName = eventName + "|" + req.param("steedosId").replace(/[@\-\.]/g, "_")
+                            eventName = eventName + "|" + fields.userId.replace(/[@\-\.]/g, "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
                             generateResponse(req, res, subscriber)
@@ -115,6 +118,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             res.json error: error.message, 400
 
 
+    # will be removed soon, use getToken instead
     app.post '/registerAPNS', authorize('register'), (req, res) ->
 
         logger.verbose "registerAPNS: " + JSON.stringify(req.body)
@@ -153,6 +157,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             res.json error: error.message, 400
 
 
+    # will be removed soon, use getToken instead
     app.post '/registerGCM', authorize('register'), (req, res) ->
 
         logger.verbose "registerGCM: " + JSON.stringify(req.body)
