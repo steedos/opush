@@ -21,6 +21,7 @@ exports.server =
 
 exports['web'] =
     enabled: yes
+    webCourierURL: 'http://localhost:2001/webcourier'
     class: require('./lib/pushservices/web').PushServiceWEB
     
 exports['event-source'] =

@@ -77,14 +77,14 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             else
                 fields.token = uuid()
 
-            if req.body.appId?
+            if req.param("appId")?
                 fields.appId = req.body.appId
             # temp variables for steedos
-            else if req.body.pushTopics?
-                if (req.body.pushTopics.length>1)
+            else if req.param("pushTopics")?
+                if (req.param("pushTopics").length>1)
                     fields.appId = "steedos"
                 else
-                    fields.appId = req.body.pushTopics[0]
+                    fields.appId = req.param("pushTopics")[0]
             else
                 fields.appId = "unknown"
 
@@ -263,6 +263,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
         subscriber =  getSubscriberFromId(tok)
         subscriber.getSubscriptions (subs) ->
             if subs?
+                subscriber.set({online: true})
                 eventNames = []
                 for sub in subs
                     eventNames.push(sub.event.name)
@@ -296,6 +297,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 , 10000
 
                 res.socket.on 'close', =>
+                    subscriber.set({online: false})
                     clearInterval antiIdleInterval
                     for eventName in eventNames
                         eventPublisher.removeListener eventName, sendEvent
