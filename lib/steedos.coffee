@@ -246,8 +246,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             if req.body.data.badge?
                                 message["badge"] = req.body.data.badge + ""
                             if req.body.data.sound?
-                                if (req.body.data.sound != "default")
-                                    message["sound"] = req.body.data.sound
+                                message["sound"] = req.body.data.sound
                             if req.body.data.data?
                                 message["data"] = req.body.data.data
 
