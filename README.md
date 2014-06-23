@@ -39,6 +39,9 @@ Installation
 - Configure the server: `cp settings-sample.coffee settings.coffee && vi settings.coffee`
 - Start redis: `redis-server`
 - Start the server: `sudo coffee pushd.coffee`
+- Start server as an service
+    sudo npm install -g forever
+    forever start -c coffee pushd.coffee
 
 Glossary
 --------
