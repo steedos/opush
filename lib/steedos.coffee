@@ -38,7 +38,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for topic in req.body.pushTopics
                     eventName = topic
                     if req.param("steedosId")?
-                        eventName = eventName + "|" + req.param("steedosId").replace("@", "_").replace(".", "_")
+                        eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
                     events[topic] = {}
                     events[topic].pushTopic = topic
                     events[topic].data = {}
@@ -108,7 +108,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         events = {};
                         for topic in req.body.pushTopics
                             eventName = topic
-                            eventName = eventName + "|" + fields.userId.replace(/[@\-\.]/g, "_")
+                            eventName = eventName + "|" + fields.userId.replace(/[@]/g, "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
                             generateResponse(req, res, subscriber)
@@ -147,7 +147,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         for topic in req.body.pushTopics
                             eventName = topic
                             if req.param("steedosId")?
-                                eventName = eventName + "|" + req.param("steedosId").replace(/[@\-\.]/g, "_")
+                                eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
                             generateResponse(req, res, subscriber)
@@ -173,7 +173,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         for topic in req.body.pushTopics
                             eventName = topic
                             if req.param("steedosId")?
-                                eventName = eventName + "|" + req.param("steedosId").replace(/[@\-\.]/g, "_")
+                                eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
                             generateResponse(req, res, subscriber)
@@ -197,7 +197,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for topic in req.body.pushTopics
                     eventName = topic
                     if req.param("steedosId")?
-                        eventName = eventName + "|" + req.param("steedosId").replace(/[@\-\.]/g, "_")
+                        eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
                     events[eventName] = {}
                 req.subscriber.addSubscriptions events, (r) ->
                     generateResponse(req, res, req.subscriber)
@@ -221,7 +221,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 for topic in req.body.pushTopics
                     eventName = topic
                     if req.param("steedosId")?
-                        eventName = eventName + "|" + req.param("steedosId").replace(/[@\-\.]/g, "_")
+                        eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
                     events[eventName] = {}
                 req.subscriber.removeSubscriptions events, (r) ->
                     generateResponse(req, res, req.subscriber)
@@ -240,7 +240,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             if req.body.pushTopic?
                 if req.body.toUsers?
                     for user in req.body.toUsers
-                        eventName = req.body.pushTopic + "|" + user.replace(/[@\-\.]/g, "_")
+                        eventName = req.body.pushTopic + "|" + user.replace(/[@]/g, "_")
                         event = getEventFromId(eventName)
                         message = {}
                         if req.body.data?
