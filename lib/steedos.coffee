@@ -224,11 +224,11 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                         eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
                     events[eventName] = {}
                 req.subscriber.removeSubscriptions events, (r) ->
-                    generateResponse(req, res, req.subscriber)
+                    res.json {}, 200
 
         catch error
             logger.error "registerTopics failed: #{error.message}"
-            res.json error: error.message, 400
+            res.json error: error.message, 200
 
 
 
