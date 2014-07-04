@@ -130,10 +130,7 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 fields.appId = req.body.appId
             # temp variables for steedos
             else if req.body.pushTopics?
-                if (req.body.pushTopics.length>1)
-                    fields.appId = "steedos"
-                else
-                    fields.appId = req.body.pushTopics[0]
+                fields.appId = req.body.pushTopics[0]
             else
                 fields.appId = "unknown"
 
@@ -148,6 +145,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             eventName = topic
                             if req.param("steedosId")?
                                 eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
+                            else if req.body.steedosId?
+                                eventName = eventName + "|" + req.body.steedosId.replace(/[@]/g, "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
                             generateResponse(req, res, subscriber)
@@ -174,6 +173,8 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                             eventName = topic
                             if req.param("steedosId")?
                                 eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
+                            else if req.body.steedosId?
+                                eventName = eventName + "|" + req.body.steedosId.replace(/[@]/g, "_")
                             events[eventName] = {}
                         subscriber.addSubscriptions events, (r) ->
                             generateResponse(req, res, subscriber)
