@@ -45,6 +45,8 @@ class PushServiceAPNS
 
             
             note_bytesize = JSON.stringify(note).replace(/[^\x00-\xff]/gi, "--").length
+            logger.verbose JSON.stringify(note).replace(/[^\x00-\xff]/gi, "--")
+            logger.verbose note_bytesize
             alert = note.alert
             oldAlert_bytesize = alert.replace(/[^\x00-\xff]/gi, "--").length
             if note_bytesize > 265
