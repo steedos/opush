@@ -68,7 +68,8 @@ class PushServiceAPNS
                     else 
                         note.alert = alertNew + '...'
                         i = alert.length + 1
-
+                        
+                    i++
 
             logger.verbose "APNS push msg: " + JSON.stringify(note)
             @driver.pushNotification note, device
