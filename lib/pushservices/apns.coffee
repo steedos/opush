@@ -50,9 +50,9 @@ class PushServiceAPNS
             if note_bytesize > 265
                 difference = note_bytesize - 265
             alert_bytesize =  oldAlert_bytesize - difference - 3 
-            logger.verbos oldAlert_bytesize
-            logger.verbos difference
-            logger.verbos alert
+            logger.verbose oldAlert_bytesize
+            logger.verbose difference
+            logger.verbose alert
             alertNew = ''
             i = 0
             while i <= alert.length
