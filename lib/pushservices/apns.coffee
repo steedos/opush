@@ -41,6 +41,25 @@ class PushServiceAPNS
                     note.payload[key] = val if key in @payloadFilter
             else
                 note.payload = payload.data
+
+
+            # 处理APNs消息长度
+            note_bytesize = JSON.stringify(note).replace(/[^\x00-\xff]/gi, "--").length
+            oldAlert_bytesize = alert.replace(/[^\x00-\xff]/gi, "--").length
+            if note_bytesize > 265
+                difference = note_bytesize - 265
+            alert_bytesize =  oldAlert_bytesize - difference - 3 
+            alertNew = ''
+            for(var i = 0; i < b.length;i++){
+                alert(b.charAt(i));
+                if alertNew.replace(/[^\x00-\xff]/gi, "--").length + b.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
+                    alertNew = alertNew + b.charAt(i)
+                else 
+                    alertNew = alertNew + '...'
+            }
+
+            note.alert = alertNew
+
             logger.verbose "APNS push msg: " + JSON.stringify(note)
             @driver.pushNotification note, device
             # On iOS we have to maintain the badge counter on the server
