@@ -51,12 +51,15 @@ class PushServiceAPNS
                 difference = note_bytesize - 265
             alert_bytesize =  oldAlert_bytesize - difference - 3 
             alertNew = ''
-            for(i = 0; i < b.length;i++)
-                if alertNew.replace(/[^\x00-\xff]/gi, "--").length + b.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
-                    alertNew = alertNew + b.charAt(i)
+            i = 0
+            while i <= alert.length
+  
+                if alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
+                    alertNew = alertNew + alert.charAt(i)
                 else 
                     alertNew = alertNew + '...'
-            
+                
+                i++
 
             note.alert = alertNew
 
