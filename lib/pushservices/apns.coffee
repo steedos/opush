@@ -50,11 +50,17 @@ class PushServiceAPNS
             if note_bytesize > 265
                 difference = note_bytesize - 265
             alert_bytesize =  oldAlert_bytesize - difference - 3 
+            logger.verbos oldAlert_bytesize
+            logger.verbos difference
+            logger.verbos alert
             alertNew = ''
             i = 0
             while i <= alert.length
+
                 logger.verbose alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length
+                logger.verbose alert_bytesize
                 logger.verbose alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
+                
                 if alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
                     alertNew = alertNew + alert.charAt(i)
                 else 
