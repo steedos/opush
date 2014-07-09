@@ -45,30 +45,25 @@ class PushServiceAPNS
 
             
             note_bytesize = JSON.stringify(note).replace(/[^\x00-\xff]/gi, "--").length
-            logger.verbose JSON.stringify(note).replace(/[^\x00-\xff]/gi, "--")
-            logger.verbose note_bytesize
+            
             alert = note.alert
+
             oldAlert_bytesize = alert.replace(/[^\x00-\xff]/gi, "--").length
+            
             if note_bytesize > 265
                 difference = note_bytesize - 265
                 alert_bytesize =  oldAlert_bytesize - difference - 3 
-                logger.verbose oldAlert_bytesize
-                logger.verbose difference
-                logger.verbose alert
+                
                 alertNew = ''
                 i = 0
                 while i <= alert.length
-
-                    logger.verbose alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length
-                    logger.verbose alert_bytesize
-                    logger.verbose alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
                     
                     if alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
                         alertNew = alertNew + alert.charAt(i)
                     else 
                         note.alert = alertNew + '...'
                         i = alert.length + 1
-                        
+
                     i++
 
             logger.verbose "APNS push msg: " + JSON.stringify(note)
