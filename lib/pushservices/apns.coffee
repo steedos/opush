@@ -51,8 +51,7 @@ class PushServiceAPNS
                 difference = note_bytesize - 265
             alert_bytesize =  oldAlert_bytesize - difference - 3 
             alertNew = ''
-            for(var i = 0; i < b.length;i++){
-                alert(b.charAt(i));
+            for(i = 0; i < b.length;i++){
                 if alertNew.replace(/[^\x00-\xff]/gi, "--").length + b.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
                     alertNew = alertNew + b.charAt(i)
                 else 
