@@ -43,7 +43,7 @@ class PushServiceAPNS
                 note.payload = payload.data
 
 
-            # 处理APNs消息长度
+            
             note_bytesize = JSON.stringify(note).replace(/[^\x00-\xff]/gi, "--").length
             oldAlert_bytesize = alert.replace(/[^\x00-\xff]/gi, "--").length
             if note_bytesize > 265
