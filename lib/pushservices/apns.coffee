@@ -53,7 +53,8 @@ class PushServiceAPNS
             alertNew = ''
             i = 0
             while i <= alert.length
-  
+                logger.verbose alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length
+                logger.verbose alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
                 if alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
                     alertNew = alertNew + alert.charAt(i)
                 else 
