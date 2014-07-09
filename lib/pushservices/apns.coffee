@@ -66,11 +66,9 @@ class PushServiceAPNS
                     if alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
                         alertNew = alertNew + alert.charAt(i)
                     else 
-                        alertNew = alertNew + '...'
-                    
-                    i++
+                        note.alert = alertNew + '...'
+                        i = alert.length + 1
 
-                note.alert = alertNew
 
             logger.verbose "APNS push msg: " + JSON.stringify(note)
             @driver.pushNotification note, device
