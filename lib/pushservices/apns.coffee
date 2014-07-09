@@ -49,9 +49,9 @@ class PushServiceAPNS
             alert = note.alert
 
             oldAlert_bytesize = alert.replace(/[^\x00-\xff]/gi, "--").length
-            
-            if note_bytesize > 265
-                difference = note_bytesize - 265
+
+            if note_bytesize > 255
+                difference = note_bytesize - 255
                 alert_bytesize =  oldAlert_bytesize - difference - 3 
                 
                 alertNew = ''
