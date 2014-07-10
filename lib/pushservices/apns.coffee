@@ -1,5 +1,6 @@
 apns = require 'apn'
 logger = require 'winston'
+unicode = require '../unicode'
 
 class PushServiceAPNS
     tokenFormat: /^[0-9a-f]{64}$/i
@@ -33,38 +34,25 @@ class PushServiceAPNS
             device.subscriberId = subscriber.id # used for error logging
             note.alert = payload.localizedTitle(info.lang)
             if subOptions?.ignore_message isnt true and message = payload.localizedMessage(info.lang)
-               note.alert = "[" + note.alert + "] " + message
+               note.alert = note.alert + "\n" + message
             note.badge = badge if not isNaN(badge = parseInt(payload.badge))
-            note.sound = payload.sound
+            note.sound = payload.sound if (payload.sound)
             if @payloadFilter?
                 for key, val of payload.data
                     note.payload[key] = val if key in @payloadFilter
             else
                 note.payload = payload.data
 
-
             
-            note_bytesize = JSON.stringify(note).replace(/[^\x00-\xff]/gi, "--").length
-            
-            alert = note.alert
+            note_bytesize = unicode.unicode_length(JSON.stringify(note))
 
-            oldAlert_bytesize = alert.replace(/[^\x00-\xff]/gi, "--").length
+            if note_bytesize > 255
+                alert_bytesize = unicode.unicode_length(note.alert)
             
-            if note_bytesize > 265
-                difference = note_bytesize - 265
-                alert_bytesize =  oldAlert_bytesize - difference - 3 
-                
-                alertNew = ''
-                i = 0
-                while i <= alert.length
-                    
-                    if alertNew.replace(/[^\x00-\xff]/gi, "--").length + alert.charAt(i).replace(/[^\x00-\xff]/gi, "--").length <= alert_bytesize
-                        alertNew = alertNew + alert.charAt(i)
-                    else 
-                        note.alert = alertNew + '...'
-                        i = alert.length + 1
+                difference = note_bytesize - 255
+                alert_new_bytesize =  alert_bytesize - difference - 4
 
-                    i++
+                note.alert = unicode.unicode_substring(note.alert, 0, alert_new_bytesize) + "..."
 
             logger.verbose "APNS push msg: " + JSON.stringify(note)
             @driver.pushNotification note, device
