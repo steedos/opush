@@ -42,18 +42,18 @@ class PushServiceBaidu
       @logger.info "Baidu push badge: " + payload.badge
 
       # # 发送推送消息
-      # @bcm.pushMsg({
-      #   push_type: 1,
-      #   device_type: 4,
-      #   user_id: ts[1],
-      #   channel_id: ts[0],
-      #   message_type: 0,
-      #   msg_keys: JSON.stringify([now]),
-      #   messages: JSON.stringify({
-      #     description: payload.msg.default,
-      #     badge: payload.badge
-      #   }),
-      # }, messageCallback)
+      @bcm.pushMsg({
+        push_type: 1,
+        device_type: 4,
+        user_id: ts[1],
+        channel_id: ts[0],
+        message_type: 0,
+        msg_keys: JSON.stringify([now]),
+        messages: JSON.stringify({
+          description: payload.msg.default,
+          badge: payload.badge
+        }),
+      }, messageCallback)
 
       # 发送通知
       @bcm.pushMsg({
@@ -66,8 +66,7 @@ class PushServiceBaidu
         messages: JSON.stringify({
           title: payload.title.default, 
           description: msg,
-          notification_builder_id: 0,
-          notification_basic_style: 4,
+          notification_basic_style: 7,
           open_type: 2,
           custom_content: {
             badge: payload.badge
