@@ -33,15 +33,18 @@ class PushServiceBaidu
       ts = info.token.split("_")
       now = new Date
       now = now.getTime() + ""
-      msg = payload.msg.default
+      # 标题
+      tle = payload.title.default || ""
+      # 内容
+      msg = payload.msg.default || ""
       # 去掉换行符
       msg = msg.replace(/\n/g, "")
 
-      @logger.info "Baidu push title: " + payload.title.default
+      @logger.info "Baidu push title: " + tle
       @logger.info "Baidu push description: " + msg
       @logger.info "Baidu push badge: " + payload.badge
 
-      # # 发送推送消息
+      # 发送推送消息
       @bcm.pushMsg({
         push_type: 1,
         device_type: 4,
@@ -50,28 +53,29 @@ class PushServiceBaidu
         message_type: 0,
         msg_keys: JSON.stringify([now]),
         messages: JSON.stringify({
-          description: payload.msg.default,
+          description: msg,
           badge: payload.badge
         }),
       }, messageCallback)
 
-      # 发送通知
-      @bcm.pushMsg({
-        push_type: 1,
-        device_type: 4,
-        user_id: ts[1],
-        channel_id: ts[0],
-        message_type: 1,
-        msg_keys: JSON.stringify([now]),
-        messages: JSON.stringify({
-          title: payload.title.default, 
-          description: msg,
-          notification_basic_style: 7,
-          open_type: 2,
-          custom_content: {
-            badge: payload.badge
-          }
-        })
-      }, notifCallback)
+      # 如果内容和标题都存在时，发送通知
+      if (msg != "" && tle != "")
+        @bcm.pushMsg({
+          push_type: 1,
+          device_type: 4,
+          user_id: ts[1],
+          channel_id: ts[0],
+          message_type: 1,
+          msg_keys: JSON.stringify([now]),
+          messages: JSON.stringify({
+            title: tle,
+            description: msg,
+            notification_basic_style: 7,
+            open_type: 2,
+            custom_content: {
+              badge: payload.badge
+            }
+          })
+        }, notifCallback)
 
 exports.PushServiceBaidu = PushServiceBaidu
