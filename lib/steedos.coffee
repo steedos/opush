@@ -103,15 +103,16 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
 
             createSubscriber fields, (subscriber, created) ->
                 subscriber.get (info) ->
-                    info.id = subscriber.id
-                    if req.body.pushTopics?
-                        events = {};
-                        for topic in req.body.pushTopics
-                            eventName = topic
-                            eventName = eventName + "|" + fields.userId.replace(/[@]/g, "_")
-                            events[eventName] = {}
-                        subscriber.addSubscriptions events, (r) ->
-                            generateResponse(req, res, subscriber)
+                    if info?
+                        info.id = subscriber.id
+                        if req.body.pushTopics?
+                            events = {};
+                            for topic in req.body.pushTopics
+                                eventName = topic
+                                eventName = eventName + "|" + fields.userId.replace(/[@]/g, "_")
+                                events[eventName] = {}
+                            subscriber.addSubscriptions events, (r) ->
+                                generateResponse(req, res, subscriber)
 
         catch error
             logger.error "Creating token failed: #{error.message}"
