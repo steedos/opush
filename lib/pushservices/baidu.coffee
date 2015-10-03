@@ -53,7 +53,6 @@ class PushServiceBaidu
         message_type: 0,
         msg_keys: JSON.stringify([now]),
         messages: JSON.stringify({
-          description: msg,
           badge: payload.badge
         }),
       }, messageCallback)
