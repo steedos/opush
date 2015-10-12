@@ -102,6 +102,14 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
                 fields.clientBuildNumber = req.param("clientBuildNumber")
 
             createSubscriber fields, (subscriber, created) ->
+
+                if created == false
+                    subscriber.getSubscriptions (subs) ->
+                        for sub in subs
+                            subscriber.removeSubscription sub.event, (deleted) ->
+                                if not deleted
+                                    logger.error "No subscriber #{req.subscriber.id}"
+
                 subscriber.get (info) ->
                     info.id = subscriber.id
                     if req.body.pushTopics?
@@ -137,6 +145,14 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             fields.proto = "apns" + "|" + fields.appId
 
             createSubscriber fields, (subscriber, created) ->
+
+                if created == false
+                    subscriber.getSubscriptions (subs) ->
+                        for sub in subs
+                            subscriber.removeSubscription sub.event, (deleted) ->
+                                if not deleted
+                                    logger.error "No subscriber #{req.subscriber.id}"
+
                 subscriber.get (info) ->
                     info.id = subscriber.id
                     if req.body.pushTopics?
@@ -158,13 +174,20 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
 
     # will be removed soon, use getToken instead
     app.post '/registerGCM', authorize('register'), (req, res) ->
-
         logger.verbose "registerGCM: " + JSON.stringify(req.body)
         try
             fields = {}
             fields.proto = "gcm"
             fields.token = req.body.pushToken
             createSubscriber fields, (subscriber, created) ->
+
+                if created == false
+                    subscriber.getSubscriptions (subs) ->
+                        for sub in subs
+                            subscriber.removeSubscription sub.event, (deleted) ->
+                                if not deleted
+                                    logger.error "No subscriber #{req.subscriber.id}"
+
                 subscriber.get (info) ->
                     info.id = subscriber.id
                     if req.body.pushTopics?
@@ -232,6 +255,57 @@ exports.setup  = (app, createSubscriber, getEventFromId, authorize, testSubscrib
             res.json error: error.message, 200
 
 
+    app.post '/unregisterAPNS', authorize('register'), (req, res) ->
+
+        logger.verbose "unregisterAPNS: " + JSON.stringify(req.body)
+
+        try
+            if req.body.pushToken?
+                req.subscriber = getSubscriberFromId(req.body.pushToken)
+            else
+                throw new Error("pushToken not found")
+
+            if req.body.pushTopics?
+                events = {};
+                for topic in req.body.pushTopics
+                    eventName = topic
+                    if req.param("steedosId")?
+                        eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
+                    else if req.body.steedosId?
+                        eventName = eventName + "|" + req.body.steedosId.replace(/[@]/g, "_")
+                    events[eventName] = {}
+                req.subscriber.removeSubscriptions events, (r) ->
+                    res.json {}, 200
+
+        catch error
+            logger.error "unregisterAPNS failed: #{error.message}"
+            res.json error: error.message, 200
+
+    app.post '/unregisterGCM', authorize('register'), (req, res) ->
+
+        logger.verbose "unregisterGCM: " + JSON.stringify(req.body)
+
+        try
+            if req.body.pushToken?
+                req.subscriber = getSubscriberFromId(req.body.pushToken)
+            else
+                throw new Error("pushToken not found")
+
+            if req.body.pushTopics?
+                events = {};
+                for topic in req.body.pushTopics
+                    eventName = topic
+                    if req.param("steedosId")?
+                        eventName = eventName + "|" + req.param("steedosId").replace(/[@]/g, "_")
+                    else if req.body.steedosId?
+                        eventName = eventName + "|" + req.body.steedosId.replace(/[@]/g, "_")
+                    events[eventName] = {}
+                req.subscriber.removeSubscriptions events, (r) ->
+                    res.json {}, 200
+
+        catch error
+            logger.error "unregisterGCM failed: #{error.message}"
+            res.json error: error.message, 200
 
     app.post '/message', authorize('publish'), (req, res) ->
 
